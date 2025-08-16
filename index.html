@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>multiplayercoping.wtf</title>
+  <meta name="description" content="crypto is multiplayer coping. gm is the roll call." />
+  <meta property="og:title" content="crypto is multiplayer coping. gm is the roll call." />
+  <meta property="og:description" content="click anywhere to post" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://multiplayercoping.wtf/" />
+  <meta property="og:image" content="https://multiplayercoping.wtf/og.png" />
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --fg: #f5f5f5;
+      --muted: #a3a3a3;
+      --accent: #22d3ee; /* cyan-ish */
+      --border: #1f2937;
+      --popup-bg: #0e1116;
+      --popup-border: #3f3f46;
+      --shadow: 0 10px 30px rgba(0,0,0,.4);
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      background: radial-gradient(1200px 600px at 50% -10%, #111 0%, var(--bg) 55%);
+      color: var(--fg);
+      display: grid; place-items: center; gap: 24px;
+      cursor: pointer; /* whole-page click target */
+      user-select: none;
+    }
+    .wrap { width: min(800px, 92vw); display: grid; gap: 18px; text-align: center; }
+    h1 { margin: 0; font-size: clamp(20px, 4vw, 28px); font-weight: 600; letter-spacing: .2px; }
+    .sub { color: var(--muted); font-size: 12px; }
+
+    /* Popup (old IRC/IM modal vibes) */
+    .modal {
+      width: min(720px, 92vw);
+      margin: 0 auto;
+      background: var(--popup-bg);
+      border: 1px solid var(--popup-border);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .modal-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; background: #111418; border-bottom: 1px solid var(--popup-border);
+      font-size: 12px; color: var(--muted);
+    }
+    .modal-header .title { color: #cbd5e1; font-weight: 600; }
+    .modal-header .lights { display: flex; gap: 6px; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.red { background: #ef4444; }
+    .dot.yellow { background: #f59e0b; }
+    .dot.green { background: #22c55e; }
+
+    .stream {
+      height: clamp(220px, 38vh, 380px);
+      padding: 10px 12px 14px;
+      font-size: 13px; line-height: 1.45; text-align: left;
+      overflow: hidden; position: relative;
+      background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.02), rgba(255,255,255,0.02) 22px,
+        rgba(255,255,255,0.00) 22px, rgba(255,255,255,0.00) 44px
+      );
+    }
+    .msg { white-space: nowrap; }
+    .t { color: var(--muted); margin-right: 8px; }
+    .h { color: #93c5fd; }
+    .gm { color: #a7f3d0; }
+
+    .footer { margin-top: 6px; font-size: 12px; color: var(--muted); }
+    .hint { color: var(--accent); }
+
+    /* Accessible button for non-pointer users */
+    .post-btn {
+      margin: 10px auto 0; padding: 10px 14px; font-size: 12px;
+      color: #0b1220; background: #67e8f9; border: none; border-radius: 999px;
+      cursor: pointer; box-shadow: 0 6px 16px rgba(34,211,238,.25);
+    }
+    .post-btn:focus { outline: 2px solid #22d3ee; outline-offset: 2px; }
+
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce) {
+      .stream { background: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" role="main" aria-label="multiplayer coping">
+    <h1>crypto is multiplayer coping. gm is the roll call.</h1>
+
+    <div class="modal" aria-label="gm roll call chat">
+      <div class="modal-header">
+        <span class="title">gm-rollcall.log</span>
+        <div class="lights" aria-hidden="true">
+          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+        </div>
+      </div>
+      <div id="stream" class="stream" aria-live="polite" aria-atomic="false"></div>
+    </div>
+
+    <div class="footer">
+      <span class="hint">click anywhere</span> to post · <span class="sub">source: @knownquantity_</span>
+      <div><button class="post-btn" id="postBtn" aria-label="Post the tweet">post</button></div>
+    </div>
+  </div>
+
+  <script>
+    // ---- Prefilled tweet ----
+    const TWEET_TEXT = "crypto is multiplayer coping. gm is the roll call. https://multiplayercoping.wtf/ source: @knownquantity_";
+    const tweetIntent = `https://twitter.com/intent/tweet?text=${encodeURIComponent(TWEET_TEXT)}`;
+
+    // Whole-page click opens composer in a new tab
+    const openTweet = () => {
+      window.open(tweetIntent, '_blank', 'noopener');
+    };
+    document.body.addEventListener('click', (e) => {
+      // Avoid double-open if user clicks the button (we open once below)
+      if (e.target.id === 'postBtn') return;
+      openTweet();
+    });
+    document.getElementById('postBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      openTweet();
+    });
+
+    // ---- Fake IRC-style gm stream ----
+    const streamEl = document.getElementById('stream');
+
+    const handles = [
+      'anon42','synthboy','defi_dad','bagholder','txmaxi','gaslite','airdropme','throwaway','dca_gm',
+      'vibecalc','pool_party','seedphrase','paperhands','hardleft','copiumcartel','leftcurve','rightcurve',
+      'floor_sweeper','pspsps','lorenode','gmqueen','hotwallet','coldstart','nondenom','mr_exitliq','chart_frog'
+    ];
+
+    function ts() {
+      const d = new Date();
+      return new Intl.DateTimeFormat(undefined, { hour: '2-digit', minute: '2-digit' }).format(d);
+    }
+
+    function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+    function gmPhrase(){
+      const variants = ['gm','gm.','gm gm','gm fr','good morning','g\u200dm','g\\/m','g m'];
+      return rand(variants);
+    }
+
+    function pushMsg() {
+      const line = document.createElement('div');
+      line.className = 'msg';
+      line.innerHTML = `<span class="t">[${ts()}]</span> <span class="h">@${rand(handles)}</span>: <span class="gm">${gmPhrase()}</span>`;
+
+      // Append and trim
+      streamEl.appendChild(line);
+      if (streamEl.children.length > 200) {
+        streamEl.removeChild(streamEl.firstChild);
+      }
+
+      // Auto-scroll effect: shift contents upward smoothly
+      streamEl.scrollTop = streamEl.scrollHeight;
+    }
+
+    // Seed a few lines quickly, then stream at a human-ish cadence
+    for (let i=0; i<12; i++) pushMsg();
+    setInterval(pushMsg, 900 + Math.random()*1100);
+
+    // Keyboard accessibility: Space/Enter to post
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        openTweet();
+      }
+    });
+  </script>
+</body>
+</html>
