@@ -1,4 +1,4 @@
-<!doctype html>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='white'/><g fill='%2322c55e'><path d='M4 6h6v14h4V10h6v16h-6V20h-4v6H4V6z'/><path d='M18 6h6v6h-6V6z'/><path d='M18 14h6v12h-6V14z'/></g></svg>" /><!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -28,7 +28,8 @@
       background: radial-gradient(1200px 600px at 50% -10%, #111 0%, var(--bg) 55%);
       color: var(--fg);
       display: grid; place-items: center; gap: 24px;
-      cursor: pointer; /* whole-page click target */
+      /* Neon synthwave gm cursor */
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><defs><filter id="glow"><feGaussianBlur stdDeviation="2" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="32" height="32" fill="%23000814" stroke="%23ff00ff" stroke-width="1" rx="4"/><g filter="url(%23glow)"><text x="16" y="20" text-anchor="middle" fill="%2300ffff" font-family="Impact,monospace" font-size="12" font-weight="900" stroke="%23ff00ff" stroke-width="0.5">gm</text></g><rect x="2" y="2" width="28" height="1" fill="%23ff00ff" opacity="0.3"/><rect x="2" y="29" width="28" height="1" fill="%2300ffff" opacity="0.3"/></svg>') 16 16, pointer;
       user-select: none;
     }
     .wrap { width: min(800px, 92vw); display: grid; gap: 18px; text-align: center; }
@@ -59,7 +60,7 @@
 
     .stream {
       height: clamp(220px, 38vh, 380px);
-      padding: 10px 12px 14px;
+      padding: 10px 12px 0px;
       font-size: 13px; line-height: 1.45; text-align: left;
       overflow: hidden; position: relative;
       background: repeating-linear-gradient(
@@ -92,21 +93,20 @@
 </head>
 <body>
   <div class="wrap" role="main" aria-label="multiplayer coping">
-    <h1>crypto is multiplayer coping. gm is the roll call.</h1>
+    <h1>crypto is multiplayer coping.<br>gm is the roll call.</h1>
 
     <div class="modal" aria-label="gm roll call chat">
       <div class="modal-header">
         <span class="title">gm-rollcall.log</span>
         <div class="lights" aria-hidden="true">
-          <span class="dot red"></span><span class="dot yellow"></span><span class="dot green"></span>
+          <span class="dot green"></span><span class="dot yellow"></span><span class="dot red"></span>
         </div>
       </div>
       <div id="stream" class="stream" aria-live="polite" aria-atomic="false"></div>
     </div>
 
     <div class="footer">
-      <span class="hint">click anywhere</span> to post · <span class="sub">source: @knownquantity_</span>
-      <div><button class="post-btn" id="postBtn" aria-label="Post the tweet">post</button></div>
+      <span class="hint">roll call is in session.</span> click to respond.
     </div>
   </div>
 
@@ -120,12 +120,6 @@
       window.open(tweetIntent, '_blank', 'noopener');
     };
     document.body.addEventListener('click', (e) => {
-      // Avoid double-open if user clicks the button (we open once below)
-      if (e.target.id === 'postBtn') return;
-      openTweet();
-    });
-    document.getElementById('postBtn').addEventListener('click', (e) => {
-      e.stopPropagation();
       openTweet();
     });
 
@@ -135,7 +129,8 @@
     const handles = [
       'anon42','synthboy','defi_dad','bagholder','txmaxi','gaslite','airdropme','throwaway','dca_gm',
       'vibecalc','pool_party','seedphrase','paperhands','hardleft','copiumcartel','leftcurve','rightcurve',
-      'floor_sweeper','pspsps','lorenode','gmqueen','hotwallet','coldstart','nondenom','mr_exitliq','chart_frog'
+      'floor_sweeper','pspsps','lorenode','rasmr','gmqueen','hotwallet','coldstart','nondenom','mr_exitliq','chart_frog',
+      'knownquantity_','0xninetynine'
     ];
 
     function ts() {
@@ -146,7 +141,11 @@
     function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
     function gmPhrase(){
-      const variants = ['gm','gm.','gm gm','gm fr','good morning','g\u200dm','g\\/m','g m'];
+      const variants = [
+        'gm','gm.','gm gm','gm fr','good morning','g\u200dm','g\\/m','g m',
+        'gm $eth to the moon','good morning from the chain','gm run $sol run',
+        'howdy. gm. good morning to all','fr gm','gm fr fr','buenas noches = gm'
+      ];
       return rand(variants);
     }
 
