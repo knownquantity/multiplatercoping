@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>multiplayer coping</title>
-  <meta name="description" content="gm is the roll call" />
-  <meta property="og:title" content="gm is the roll call" />
+  <title>multiplayercoping.wtf</title>
+  <meta name="description" content="crypto is multiplayer coping. gm is the roll call." />
+  <meta property="og:title" content="crypto is multiplayer coping. gm is the roll call." />
   <meta property="og:description" content="click anywhere to post" />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://multiplayercoping.wtf/" />
@@ -97,7 +97,7 @@
 
     <div class="modal" aria-label="gm roll call chat">
       <div class="modal-header">
-        <span class="title">gm.rollcall.log</span>
+        <span class="title">gm rollcall log</span>
         <div class="lights" aria-hidden="true">
           <span class="dot green"></span><span class="dot yellow"></span><span class="dot red"></span>
         </div>
@@ -130,7 +130,16 @@
       'anon42','synthboy','defi_dad','bagholder','txmaxi','gaslite','airdropme','throwaway','dca_gm',
       'vibecalc','pool_party','seedphrase','paperhands','hardleft','copiumcartel','leftcurve','rightcurve',
       'floor_sweeper','pspsps','lorenode','gmqueen','hotwallet','coldstart','nondenom','mr_exitliq','chart_frog',
-      'knownquantity_','0xninetynine'
+      'knownquantity_','0xninetynine','cryptomaxi','moonboy','diamondhands','apestogether','hodlgang',
+      'degenerate','yield_farmer','nft_flipper','whale_watcher','rugpull_survivor','liquidated_legend',
+      'flash_loan_king','sandwich_attack','mev_bot','validators_choice','staking_rewards','governance_token',
+      'dao_member','protocol_dev','smart_contract','bridge_user','layer2_native','rollup_enjoyer',
+      'zk_proof','merkle_tree','consensus_algo','block_producer','gas_optimized','eip_1559',
+      'defisummer','yield_chaser','liquidity_provider','impermanent_loss','slippage_tolerance','amm_swap',
+      'uniswap_v3','curve_wars','convex_locked','yearn_vault','compound_user','aave_flashloan',
+      'maker_vault','synthetix_staker','chainlink_oracle','polygon_bridge','arbitrum_one','optimism_rollup',
+      'avalanche_subnet','solana_validator','cardano_stake','polkadot_para','cosmos_hub','terra_lunatic',
+      'phantom_wallet','metamask_user','ledger_secured','multisig_signer','cold_storage','hot_wallet_risk'
     ];
 
     function ts() {
@@ -145,10 +154,29 @@
         'gm','gm.','gm gm','gm fr','good morning','g\u200dm','g\\/m','g m',
         'gm $eth to the moon','good morning from the chain','gm run $sol run',
         'howdy. gm. good morning to all','fr gm','gm fr fr','buenas noches = gm',
-        'gm charts are green','gm and wagmi','wysiwyg gm','gm//',i'm feeling a great morning',
-        'the morning is indeed goof','great morning','$eth 10k','$btc 300k','$wif up','gm up and away we go'
+        'gm $eth 10k','gm $sol 1k','gm $btc 300k','gm hello','gm $wif to the moon','gm what is happening to $doge',
+        '(gm)','{gm}','[gm]','g.m.','g    m'
       ];
-      return rand(variants);
+      
+      // Keep track of the last 5 phrases
+      if (!gmPhrase.recentPhrases) {
+        gmPhrase.recentPhrases = [];
+      }
+      
+      let newPhrase;
+      let attempts = 0;
+      do {
+        newPhrase = rand(variants);
+        attempts++;
+      } while (gmPhrase.recentPhrases.includes(newPhrase) && attempts < 50);
+      
+      // Add to recent phrases and keep only last 5
+      gmPhrase.recentPhrases.push(newPhrase);
+      if (gmPhrase.recentPhrases.length > 5) {
+        gmPhrase.recentPhrases.shift();
+      }
+      
+      return newPhrase;
     }
 
     function pushMsg() {
